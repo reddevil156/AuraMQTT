@@ -1,0 +1,28 @@
+﻿<Window x:Class="AuraMQTT.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AuraMQTT"
+        mc:Ignorable="d"
+        Title="AuraMQTT" Height="450" Width="800" WindowStartupLocation="CenterScreen" >
+
+    
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Name="txtStatusBar" HorizontalAlignment="Left" Width="301" />
+            </StatusBarItem>
+        </StatusBar>
+        
+        <StackPanel HorizontalAlignment="Left" Margin="0,219,0,0" Width="288">
+            <TextBox Name="txtReceived">LEER</TextBox>
+            <Button Name="Subscribe" Click="BtnSubscribe_Click" Content="Subscribe"/>
+
+            <TextBox Name="txtTopic">Topic</TextBox>
+            <TextBox Name="MQTTBroker"/>
+            <Button Name="Save" Click="BtnSave_Click" Content="Speichern"/>
+
+        </StackPanel>
+    </DockPanel>
+</Window>
