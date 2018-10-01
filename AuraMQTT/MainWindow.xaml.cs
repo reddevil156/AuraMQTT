@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 
 namespace AuraMQTT
 {
@@ -24,29 +25,24 @@ namespace AuraMQTT
 
         //variables for notification icon
         NotifyIcon nIcon = new NotifyIcon();
-        private System.Windows.Forms.ContextMenu contextMenu1;
-        private System.Windows.Forms.MenuItem menuItem1;
-        private System.Windows.Forms.MenuItem menuItem2;
+        private ContextMenu contextMenu1;
+        private MenuItem menuItem1;
+        private MenuItem menuItem2;
 
         public MainWindow()
         {
             InitializeComponent();
 
             //Notification Icon
-            nIcon.Icon = new System.Drawing.Icon("icon.ico");
+            nIcon.Icon = new Icon("icon.ico");
             nIcon.Visible = true;
             nIcon.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
-            //   this.WindowState = WindowState.Minimized;
-            //   this.ShowInTaskbar = false;
-            //this.Hide();
 
-            ///TEST
-            ///
-            this.contextMenu1 = new System.Windows.Forms.ContextMenu();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.contextMenu1 = new ContextMenu();
+            this.menuItem1 = new MenuItem();
+            this.menuItem2 = new MenuItem();
 
-            this.contextMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.menuItem1, this.menuItem2 });
+            this.contextMenu1.MenuItems.AddRange(new MenuItem[] { this.menuItem1, this.menuItem2 });
             this.menuItem1.Index = 0;
             this.menuItem1.Text = "Open";
             this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
@@ -278,24 +274,29 @@ namespace AuraMQTT
 
         public void ChangeColors(int r, int g, int b)
         {
-            AuraSDK sdk = new AuraSDK("lib/AURA_SDK.dll");
-            foreach (Motherboard motherboard in sdk.Motherboards)
+
+            try
             {
-                motherboard.SetMode(DeviceMode.Software);
-
-                Color[] colors = new Color[motherboard.LedCount];
-
-                for (int i = 0; i < colors.Length; i++)
+                AuraSDK sdk = new AuraSDK("hallo/AURA_SDK.dll");
+                foreach (Motherboard motherboard in sdk.Motherboards)
                 {
-                    colors[i] = new Color((byte)r, (byte)g, (byte)b);
+                    motherboard.SetMode(DeviceMode.Software);
+
+                    Color[] colors = new Color[motherboard.LedCount];
+
+                    for (int i = 0; i < colors.Length; i++)
+                    {
+                        colors[i] = new Color((byte)r, (byte)g, (byte)b);
+                    }
+
+                    motherboard.SetColors(colors);
                 }
-
-                motherboard.SetColors(colors);
-
+                sdk.Unload();
             }
-            sdk.Unload();
+            catch (FileNotFoundException e){
 
-
+                System.Windows.MessageBox.Show("AURA_SDK.dll missing");
+            }
         }
 
 
