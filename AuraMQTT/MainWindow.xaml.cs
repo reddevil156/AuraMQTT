@@ -24,7 +24,7 @@ namespace AuraMQTT
         AuraConnect auraConnection = new AuraConnect();
 
         //variables for notification icon
-        NotifyIcon nIcon = new NotifyIcon();
+        private NotifyIcon nIcon = new NotifyIcon();
         private ContextMenu contextMenu1;
         private MenuItem menuItem1;
         private MenuItem menuItem2;
@@ -34,24 +34,12 @@ namespace AuraMQTT
             InitializeComponent();
 
             //Notification Icon
-            nIcon.Icon = new Icon("icon.ico");
+            nIcon.Icon = new Icon(System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Resources/icon.ico")).Stream);
             nIcon.Visible = true;
             nIcon.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
 
-            this.contextMenu1 = new ContextMenu();
-            this.menuItem1 = new MenuItem();
-            this.menuItem2 = new MenuItem();
-
-            this.contextMenu1.MenuItems.AddRange(new MenuItem[] { this.menuItem1, this.menuItem2 });
-            this.menuItem1.Index = 0;
-            this.menuItem1.Text = "Open";
-            this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
-            this.menuItem2.Index = 1;
-            this.menuItem2.Text = "Exit";
-            this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
-
-            nIcon.ContextMenu = this.contextMenu1;
-
+            //create Menu
+            createMenu();
 
             MQTTBroker.Text = Properties.Settings.Default.IpAdress;
             txtTopic.Text = Properties.Settings.Default.Topic;
@@ -77,6 +65,24 @@ namespace AuraMQTT
 
             establishMQTTConnection();
 
+        }
+
+        public void createMenu()
+        {
+
+            this.contextMenu1 = new ContextMenu();
+            this.menuItem1 = new MenuItem();
+            this.menuItem2 = new MenuItem();
+
+            this.contextMenu1.MenuItems.AddRange(new MenuItem[] { this.menuItem1, this.menuItem2 });
+            this.menuItem1.Index = 0;
+            this.menuItem1.Text = "Open";
+            this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
+            this.menuItem2.Index = 1;
+            this.menuItem2.Text = "Exit";
+            this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
+
+            nIcon.ContextMenu = this.contextMenu1;
         }
 
         private void menuItem1_Click(object Sender, EventArgs e)
@@ -243,62 +249,5 @@ namespace AuraMQTT
         }
 
     }
-
-
-
-
-
-    /*
-     *  Aura Connect Class
-    */
-    public class AuraConnect
-    {
-        public Color[] testColors = new Color[]
-        {
-            //new Color(255, 0, 0),
-            //new Color(255, 127, 0),
-            //new Color(255, 255, 0),
-            //new Color(127, 255, 0),
-            //new Color(0, 255, 0),
-            //new Color(0, 255, 127),
-            //new Color(0, 255, 255),
-            //new Color(0, 127, 255),
-            new Color(0, 0, 255),
-            new Color(0, 0, 255),
-            new Color(0, 0, 255),
-            new Color(0, 0, 255)
-          //new Color(127, 0, 255),
-          //new Color(255, 0, 255),
-          //new Color(255, 0, 127) */
-        };
-
-        public void ChangeColors(int r, int g, int b)
-        {
-
-            try
-            {
-                AuraSDK sdk = new AuraSDK("hallo/AURA_SDK.dll");
-                foreach (Motherboard motherboard in sdk.Motherboards)
-                {
-                    motherboard.SetMode(DeviceMode.Software);
-
-                    Color[] colors = new Color[motherboard.LedCount];
-
-                    for (int i = 0; i < colors.Length; i++)
-                    {
-                        colors[i] = new Color((byte)r, (byte)g, (byte)b);
-                    }
-
-                    motherboard.SetColors(colors);
-                }
-                sdk.Unload();
-            }
-            catch (FileNotFoundException e){
-
-                System.Windows.MessageBox.Show("AURA_SDK.dll missing");
-            }
-        }
-
-
-    }
+       
 }
