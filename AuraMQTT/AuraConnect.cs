@@ -50,7 +50,7 @@ namespace AuraMQTT
                 }
                 sdk.Unload();
             }
-            catch (System.IO.FileNotFoundException e)
+            catch (System.IO.FileNotFoundException)
             {
 
                 System.Windows.MessageBox.Show("AURA_SDK.dll missing");

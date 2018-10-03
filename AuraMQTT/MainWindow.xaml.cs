@@ -41,7 +41,7 @@ namespace AuraMQTT
             //create Menu
             createMenu();
 
-            MQTTBroker.Text = Properties.Settings.Default.IpAdress;
+            txtIpAdress.Text = Properties.Settings.Default.IpAdress;
             txtTopic.Text = Properties.Settings.Default.Topic;
 
             string BrokerAddress = "192.168.160.20";
@@ -242,12 +242,16 @@ namespace AuraMQTT
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             
-            Properties.Settings.Default.IpAdress = MQTTBroker.Text;
+            Properties.Settings.Default.IpAdress = txtIpAdress.Text;
             Properties.Settings.Default.Topic = txtTopic.Text;
             Properties.Settings.Default.Save();
             System.Windows.MessageBox.Show("Settings Saved");
         }
 
+        private void StackPanel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
     }
        
 }
