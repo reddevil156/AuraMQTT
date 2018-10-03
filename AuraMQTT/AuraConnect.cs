@@ -10,6 +10,11 @@ namespace AuraMQTT
     class AuraConnect
     {
 
+        public AuraConnect()
+        {
+            
+        }
+
         public Color[] testColors = new Color[]
         {
             //new Color(255, 0, 0),

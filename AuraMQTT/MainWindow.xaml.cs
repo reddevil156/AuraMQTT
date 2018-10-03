@@ -1,6 +1,4 @@
 ﻿using System.Windows;
-using AuraSDKDotNet;
-using Color = AuraSDKDotNet.Color;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using System;
@@ -8,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
-using System.IO;
 
 namespace AuraMQTT
 {
@@ -25,13 +22,12 @@ namespace AuraMQTT
 
         //variables for notification icon
         private NotifyIcon nIcon = new NotifyIcon();
-        private ContextMenu contextMenu1;
-        private MenuItem menuItem1;
-        private MenuItem menuItem2;
+
 
         public MainWindow()
         {
             InitializeComponent();
+                      
 
             //Notification Icon
             nIcon.Icon = new Icon(System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Resources/icon.ico")).Stream);
@@ -43,6 +39,12 @@ namespace AuraMQTT
 
             txtIpAdress.Text = Properties.Settings.Default.IpAdress;
             txtTopic.Text = Properties.Settings.Default.Topic;
+            cBoxMinimize.IsChecked = Properties.Settings.Default.checkMinimize;
+
+            txtStatusBar.Text = "";
+            txtPort.Text = "";
+            txtPassword.Text = "";
+            txtUsername.Text = "";
 
             string BrokerAddress = "192.168.160.20";
 
@@ -69,20 +71,19 @@ namespace AuraMQTT
 
         public void createMenu()
         {
+            ContextMenu contextMenu1 = new ContextMenu();
+            MenuItem menuItem1 = new MenuItem();
+            MenuItem menuItem2 = new MenuItem();
 
-            this.contextMenu1 = new ContextMenu();
-            this.menuItem1 = new MenuItem();
-            this.menuItem2 = new MenuItem();
+            contextMenu1.MenuItems.AddRange(new MenuItem[] { menuItem1, menuItem2 });
+            menuItem1.Index = 0;
+            menuItem1.Text = "Open";
+            menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
+            menuItem2.Index = 1;
+            menuItem2.Text = "Exit";
+            menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
 
-            this.contextMenu1.MenuItems.AddRange(new MenuItem[] { this.menuItem1, this.menuItem2 });
-            this.menuItem1.Index = 0;
-            this.menuItem1.Text = "Open";
-            this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
-            this.menuItem2.Index = 1;
-            this.menuItem2.Text = "Exit";
-            this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
-
-            nIcon.ContextMenu = this.contextMenu1;
+            nIcon.ContextMenu = contextMenu1;
         }
 
         private void menuItem1_Click(object Sender, EventArgs e)
@@ -115,6 +116,7 @@ namespace AuraMQTT
         protected override void OnStateChanged(EventArgs e)
         {
             base.OnStateChanged(e);
+            
             switch (this.WindowState)
             {
                 case WindowState.Maximized:
@@ -123,9 +125,12 @@ namespace AuraMQTT
                     this.Activate();
                     break;
                 case WindowState.Minimized:
-                    this.Hide();
-                    this.ShowInTaskbar = false;
-                    nIcon.ShowBalloonTip(1000, "Minimized to Tray", this.Title, ToolTipIcon.None);
+                    if (cBoxMinimize.IsChecked == true)
+                    {
+                        this.Hide();
+                        this.ShowInTaskbar = false;
+                        nIcon.ShowBalloonTip(1000, "Minimized to Tray", this.Title, ToolTipIcon.None);
+                    }
                     break;
                 case WindowState.Normal:
                     this.Show();
@@ -226,11 +231,8 @@ namespace AuraMQTT
         {
             if (txtTopic.Text != "")
             {
-                // whole topic
-                string Topic = "/home/" + txtTopic.Text;
-
                 // subscribe to the topic with QoS 2
-                client.Subscribe(new string[] { Topic }, new byte[] { 2 });   // we need arrays as parameters because we can subscribe to different topics with one call
+                client.Subscribe(new string[] { txtTopic.Text }, new byte[] { 2 });   // we need arrays as parameters because we can subscribe to different topics with one call
                 txtReceived.Text = "";
             }
             else
@@ -244,14 +246,11 @@ namespace AuraMQTT
             
             Properties.Settings.Default.IpAdress = txtIpAdress.Text;
             Properties.Settings.Default.Topic = txtTopic.Text;
+            Properties.Settings.Default.checkMinimize = (cBoxMinimize.IsChecked).Value;
             Properties.Settings.Default.Save();
             System.Windows.MessageBox.Show("Settings Saved");
         }
 
-        private void StackPanel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-
-        }
     }
        
 }

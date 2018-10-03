@@ -58,5 +58,17 @@ namespace AuraMQTT.Properties {
                 this["clientId"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool checkMinimize {
+            get {
+                return ((bool)(this["checkMinimize"]));
+            }
+            set {
+                this["checkMinimize"] = value;
+            }
+        }
     }
 }

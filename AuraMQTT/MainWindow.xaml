@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AuraMQTT"
-        mc:Ignorable="d"
-        Title="AuraMQTT" Height="500" Width="800" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" >
+        mc:Ignorable="d"        
+        Title="AuraMQTT" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen"  >
     <!-- complete grid window-->
+
     <Grid>
         <!-- grid at top for logo-->
         <Grid Height="200" Margin="0,0,0,271"></Grid>
@@ -32,34 +32,34 @@
                 <ColumnDefinition Width="140"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-        
+
             <!-- grid settings left side-->
             <Label Grid.Column="0" Grid.Row="0" Margin="0,0,0,5" HorizontalAlignment="Center" FontWeight="Bold">MQTT Broker Settings:</Label>
 
             <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal">
                 <Label Margin="0,0,0,5" FontWeight="Bold">IP Adress:</Label>
-                <TextBox Margin="20,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtIpAdress" Text=""/>
+                <TextBox Margin="20,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtIpAdress"/>
             </StackPanel>
             <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Orientation="Horizontal">
                 <Label Margin="0,0,0,5" FontWeight="Bold">Port:</Label>
-                <TextBox Margin="48,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtPort" Text=""/>
+                <TextBox Margin="48,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtPort"/>
             </StackPanel>
             <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Orientation="Horizontal">
                 <Label Margin="0,0,0,5" FontWeight="Bold">Username:</Label>
-                <TextBox Margin="15,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtUsername" Text=""/>
+                <TextBox Margin="15,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtUsername"/>
             </StackPanel>
             <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Horizontal">
                 <Label Margin="0,0,0,5" FontWeight="Bold">Password:</Label>
-                <TextBox Margin="19,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtPassword" Text=""/>
+                <TextBox Margin="19,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtPassword"/>
             </StackPanel>
 
-            
+
             <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" Orientation="Horizontal">
                 <Label Margin="0,0,0,5" FontWeight="Bold" >Topic:</Label>
-                <TextBox Margin="42,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtTopic" ToolTip="Enter MQTT Topic: exmpl: /mqtt/aura" Text=""/>
+                <TextBox Margin="42,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtTopic" ToolTip="Enter MQTT Topic: exmpl: /mqtt/aura"/>
             </StackPanel>
-            
-            
+
+
             <!-- columns mid settings-->
             <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal">
                 <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="cBoxMinimize" />
@@ -75,11 +75,11 @@
             <Button Grid.Column="4" Grid.Row="6" Margin="1,1,1,1" Name="Save" Click="BtnSave_Click" Content="Save Settings"/>
 
 
-        <!-- end grid mid-->
+            <!-- end grid mid-->
         </Grid>
 
         <!-- grid for bottom status bar-->
-        <Grid Margin="0,431,0,0">
+        <Grid Margin="0,428,0,0">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
@@ -91,13 +91,13 @@
             </Grid.ColumnDefinitions>
 
             <StatusBarItem Grid.Row="0" Grid.Column="0" BorderThickness="2" BorderBrush="Gray" Background="LightGray">
-                     <TextBlock Padding="0" Name="txtStatusBar" HorizontalAlignment="Left" Width="300" />
+                <TextBlock Padding="0" Name="txtStatusBar" HorizontalAlignment="Left" Width="300" />
             </StatusBarItem>
 
-            <Label Grid.Row="0" Grid.Column="1" BorderThickness="2" BorderBrush="Gray" Background="LightGray" />
+            <Label Grid.Row="0" Grid.Column="1" BorderThickness="2" BorderBrush="Gray" Background="LightGray" RenderTransformOrigin="0.515,-0.535" />
 
             <StatusBarItem Grid.Row="0" Grid.Column="2" BorderThickness="2" BorderBrush="Gray" Background="LightGray">
-                    <TextBlock  Name="txtReceived"></TextBlock>
+                <TextBlock  Name="txtReceived"></TextBlock>
             </StatusBarItem>
         </Grid>
 
@@ -105,4 +105,5 @@
 
 
     </Grid>
+
 </Window>
