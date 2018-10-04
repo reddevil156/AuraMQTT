@@ -72,7 +72,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AuraConnect.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -139,6 +138,7 @@
     <Content Include="lib\VGA_Extra.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\Logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

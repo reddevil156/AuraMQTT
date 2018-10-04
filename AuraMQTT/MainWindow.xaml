@@ -4,15 +4,47 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"        
-        Title="AuraMQTT" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen"  >
-    <!-- complete grid window-->
+        Title="AuraMQTT" Width="800" Height="500" d:DesignWidth="800" d:DesignHeight="500" WindowStartupLocation="CenterScreen"  >
 
-    <Grid>
+    <DockPanel>
+        <!-- grid for bottom status bar. is set in a dock panel at bottom-->
+        <Grid DockPanel.Dock="Bottom">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40
+                               "/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StatusBarItem Grid.Row="0" Grid.Column="0" BorderThickness="2" BorderBrush="Gray" Background="LightGray">
+                <TextBlock FontWeight="Bold" HorizontalAlignment="Left" Name="txtStatusBar" />
+            </StatusBarItem>
+
+            <Label Grid.Row="0" Grid.Column="1" BorderThickness="2" BorderBrush="Gray" Background="LightGray" />
+
+            <StatusBarItem Grid.Row="0" Grid.Column="2" BorderThickness="2" BorderBrush="Gray" Background="LightGray">
+                <TextBlock  FontWeight="Bold" HorizontalAlignment="Left" Name="txtReceived"/>
+            </StatusBarItem>
+        </Grid>
+
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,0" Height="200">
+            <Grid.Background>
+                <ImageBrush ImageSource="Resources/Logo.png" />
+            </Grid.Background>
+        </Grid>
+        
+        <!-- complete grid window. fills rest of dock panel-->
+        <Grid Height="Auto" Width="Auto">
+        
         <!-- grid at top for logo-->
-        <Grid Height="200" Margin="0,0,0,271"></Grid>
+
 
         <!-- grid for settings mid -->
-        <Grid  Height="230" Margin="0,211,0,30">
+        <Grid  Margin="0,0,0,0">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
@@ -69,41 +101,16 @@
 
 
             <!-- grid buttons right side-->
-            <Button Grid.Column="4" Grid.Row="5" Margin="1,1,1,1" Name="Subscribe" Click="BtnSubscribe_Click" Content="Subscribe" />
+            <Button Grid.Column="4" Grid.Row="5" Margin="1,1,1,1" FontWeight="Bold" Name="Subscribe" Click="BtnSubscribe_Click" Content="Subscribe" />
 
 
-            <Button Grid.Column="4" Grid.Row="6" Margin="1,1,1,1" Name="Save" Click="BtnSave_Click" Content="Save Settings"/>
+            <Button Grid.Column="4" Grid.Row="6" Margin="1,1,1,1" FontWeight="Bold" Name="Save" Click="BtnSave_Click" Content="Save Settings"/>
 
 
             <!-- end grid mid-->
         </Grid>
 
-        <!-- grid for bottom status bar-->
-        <Grid Margin="0,428,0,0">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="400"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <StatusBarItem Grid.Row="0" Grid.Column="0" BorderThickness="2" BorderBrush="Gray" Background="LightGray">
-                <TextBlock Padding="0" Name="txtStatusBar" HorizontalAlignment="Left" Width="300" />
-            </StatusBarItem>
-
-            <Label Grid.Row="0" Grid.Column="1" BorderThickness="2" BorderBrush="Gray" Background="LightGray" RenderTransformOrigin="0.515,-0.535" />
-
-            <StatusBarItem Grid.Row="0" Grid.Column="2" BorderThickness="2" BorderBrush="Gray" Background="LightGray">
-                <TextBlock  Name="txtReceived"></TextBlock>
-            </StatusBarItem>
-        </Grid>
-
-
-
-
     </Grid>
+    </DockPanel>
 
 </Window>

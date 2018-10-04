@@ -18,7 +18,8 @@ namespace AuraMQTT
     {
         MqttClient client;
         string clientId;
-        AuraConnect auraConnection = new AuraConnect();
+        AuraConnect auraConnection;
+
 
         //variables for notification icon
         private NotifyIcon nIcon = new NotifyIcon();
@@ -27,15 +28,15 @@ namespace AuraMQTT
         public MainWindow()
         {
             InitializeComponent();
-                      
+            auraConnection = new AuraConnect();
 
             //Notification Icon
             nIcon.Icon = new Icon(System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Resources/icon.ico")).Stream);
             nIcon.Visible = true;
-            nIcon.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
+            nIcon.DoubleClick += new System.EventHandler(this.NotifyIcon1_DoubleClick);
 
             //create Menu
-            createMenu();
+            CreateMenu();
 
             txtIpAdress.Text = Properties.Settings.Default.IpAdress;
             txtTopic.Text = Properties.Settings.Default.Topic;
@@ -52,7 +53,7 @@ namespace AuraMQTT
             
 
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
-            client.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
+            client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
 
             //get client id from settings
             clientId = Properties.Settings.Default.clientId;
@@ -65,11 +66,11 @@ namespace AuraMQTT
                 Properties.Settings.Default.Save();
             }
 
-            establishMQTTConnection();
+            EstablishMQTTConnection();
 
         }
 
-        public void createMenu()
+        public void CreateMenu()
         {
             ContextMenu contextMenu1 = new ContextMenu();
             MenuItem menuItem1 = new MenuItem();
@@ -78,15 +79,15 @@ namespace AuraMQTT
             contextMenu1.MenuItems.AddRange(new MenuItem[] { menuItem1, menuItem2 });
             menuItem1.Index = 0;
             menuItem1.Text = "Open";
-            menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
+            menuItem1.Click += new System.EventHandler(this.MenuItem1_Click);
             menuItem2.Index = 1;
             menuItem2.Text = "Exit";
-            menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
+            menuItem2.Click += new System.EventHandler(this.MenuItem2_Click);
 
             nIcon.ContextMenu = contextMenu1;
         }
 
-        private void menuItem1_Click(object Sender, EventArgs e)
+        private void MenuItem1_Click(object Sender, EventArgs e)
         {
             // Show the MainWindow
             this.Show();
@@ -95,13 +96,13 @@ namespace AuraMQTT
             this.Activate();
         }
 
-        private void menuItem2_Click(object Sender, EventArgs e)
+        private void MenuItem2_Click(object Sender, EventArgs e)
         {
             // Close the form, which closes the application.
             this.Close();
         }
 
-        private void notifyIcon1_DoubleClick(object Sender, EventArgs e)
+        private void NotifyIcon1_DoubleClick(object Sender, EventArgs e)
         {
             // Show the window when the user double clicks on the notify icon.
             if (this.WindowState == WindowState.Minimized)
@@ -112,6 +113,7 @@ namespace AuraMQTT
                 this.Activate();
             }
         }
+
 
         protected override void OnStateChanged(EventArgs e)
         {
@@ -129,7 +131,7 @@ namespace AuraMQTT
                     {
                         this.Hide();
                         this.ShowInTaskbar = false;
-                        nIcon.ShowBalloonTip(1000, "Minimized to Tray", this.Title, ToolTipIcon.None);
+                        nIcon.ShowBalloonTip(1000, "Minimized to Tray, Doubleclick Item to re-open window", this.Title, ToolTipIcon.None);
                     }
                     break;
                 case WindowState.Normal:
@@ -142,7 +144,7 @@ namespace AuraMQTT
         }
 
         //establish mqtt connection
-        public async void establishMQTTConnection()
+        public async void EstablishMQTTConnection()
         {
             await Task.Run(() => ExecuteLongProcedureAsync(this));
         }
@@ -155,7 +157,7 @@ namespace AuraMQTT
                 client.Connect(clientId);
                 Dispatcher.Invoke(() =>
                 {
-                    gui.updateStatusBar("MQTT connection established");
+                    gui.UpdateStatusBar("MQTT connection established");
                 }); 
             }
             catch
@@ -163,13 +165,13 @@ namespace AuraMQTT
                 // MessageBox.Show("Could not connect!");
                 Dispatcher.Invoke(() =>
                 {
-                    gui.updateStatusBar("No connection, MQTT Server does not respond");
+                    gui.UpdateStatusBar("No connection, MQTT Server does not respond");
                 });
             }
         }
 
         //update status bar with a text
-        public void updateStatusBar(String text)
+        public void UpdateStatusBar(String text)
         {
             txtStatusBar.Text = text;
         }
@@ -191,7 +193,7 @@ namespace AuraMQTT
         }
 
         // this code runs when a message was received
-        void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
+        void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             string ReceivedMessage = Encoding.UTF8.GetString(e.Message);
 
@@ -200,29 +202,30 @@ namespace AuraMQTT
                 String[] split = ReceivedMessage.Split(',');
                 if (split.Length == 3)
                 {
-                    int ColorR;
-                    int ColorG;
-                    int ColorB;
 
-                    txtReceived.Text = split[0] + " " + split[1] + " " + split[2];
+                    txtReceived.Text = DateTime.Now.ToString("HH:mm") + " R: " + split[0] + "B: " + split[1] + "G: " + split[2];
+                    //txtReceived.Text = split[0] + " " + split[1] + " " + split[2];
 
 
-                    if (int.TryParse(split[0], out ColorR) && int.TryParse(split[1], out ColorG) && int.TryParse(split[2], out ColorB))
+                    if (int.TryParse(split[0], out int ColorR) && int.TryParse(split[1], out int ColorG) && int.TryParse(split[2], out int ColorB))
                     {
-                        auraConnection.ChangeColors(ColorR, ColorG, ColorB);
+                        if ((0 <= ColorR) && (ColorR <= 255) && (0 <= ColorG) && (ColorG <= 255) && (0 <= ColorB) && (ColorB <= 255))
+                        {
+                            auraConnection.ChangeColors(ColorR, ColorG, ColorB);
+                        } else
+                        {
+                            txtReceived.Text = DateTime.Now.ToString("HH:mm") + " ERROR: " + ReceivedMessage;
+                        }
+                        
 
-                    }
+                    } 
                 }
                 else
                 {
-                    txtReceived.Text = "wrong input";
+                    txtReceived.Text = DateTime.Now.ToString("HH:mm") + " ERROR: " + ReceivedMessage;
                 }
 
-              /*  if (ReceivedMessage.Equals("ON"))
-                {
-                    auraConnection.ChangeColors();
-                }
-                */                
+            
             });
         }
 
@@ -233,7 +236,7 @@ namespace AuraMQTT
             {
                 // subscribe to the topic with QoS 2
                 client.Subscribe(new string[] { txtTopic.Text }, new byte[] { 2 });   // we need arrays as parameters because we can subscribe to different topics with one call
-                txtReceived.Text = "";
+                txtReceived.Text = DateTime.Now.ToString("HH:mm") + " Topic subscribed";
             }
             else
             {
