@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using IWshRuntimeLibrary;
+using System.IO;
+using System.Security;
+using System.Security.Cryptography;
 
 namespace AuraMQTT
 {
@@ -41,20 +45,40 @@ namespace AuraMQTT
             txtIpAdress.Text = Properties.Settings.Default.IpAdress;
             txtTopic.Text = Properties.Settings.Default.Topic;
             cBoxMinimize.IsChecked = Properties.Settings.Default.checkMinimize;
+            cBoxStartWithWindows.IsChecked = Properties.Settings.Default.checkStartWithWindows;
 
             txtStatusBar.Text = "";
             txtPort.Text = "";
-            txtPassword.Text = "";
             txtUsername.Text = "";
+            txtPassword.Text = "";
 
-            string BrokerAddress = "192.168.160.20";
+            if (cBoxMinimize.IsChecked == true)
+            {
+                this.WindowState = WindowState.Minimized;
+                this.Hide();
+                this.ShowInTaskbar = false;
+            }
 
-            client = new MqttClient(BrokerAddress);
+            /**
+             * TEST
+             
+
+            byte[] plaintext;
+
+            // Generate additional entropy (will be used as the Initialization vector)
+            byte[] entropy = new byte[20];
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(entropy);
+            }
+
+            byte[] ciphertext = ProtectedData.Protect(Encoding.ASCII.GetBytes("test"), entropy,
+                DataProtectionScope.CurrentUser);
+            Properties.Settings.Default.password = ciphertext;
+
+            */
+
             
-
-            // register a callback-function (we have to implement, see below) which is called by the library when a message was received
-            client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
-
             //get client id from settings
             clientId = Properties.Settings.Default.clientId;
 
@@ -131,7 +155,7 @@ namespace AuraMQTT
                     {
                         this.Hide();
                         this.ShowInTaskbar = false;
-                        nIcon.ShowBalloonTip(1000, "Minimized to Tray, Doubleclick Item to re-open window", this.Title, ToolTipIcon.None);
+                        nIcon.ShowBalloonTip(1000, "Minimized to tray, Doubleclick or use menu to re-open window", this.Title, ToolTipIcon.None);
                     }
                     break;
                 case WindowState.Normal:
@@ -146,18 +170,38 @@ namespace AuraMQTT
         //establish mqtt connection
         public async void EstablishMQTTConnection()
         {
-            await Task.Run(() => ExecuteLongProcedureAsync(this));
+
+            if (txtPort.Text.Equals(""))
+            {
+                client = new MqttClient(txtIpAdress.Text);
+            } else
+            {
+                client = new MqttClient(txtIpAdress.Text, int.Parse(txtPort.Text), false, MqttSslProtocols.None, null, null);
+            }
+
+            // register a callback-function (we have to implement, see below) which is called by the library when a message was received
+            client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+            string user = txtUsername.Text;
+            string pass = txtPassword.Text;
+
+            await Task.Run(() => EstablishMQTTConnectionAsync(this, user, pass));
         }
 
         // should be called with task, tries to connect to mqtt broker
-        internal void ExecuteLongProcedureAsync(MainWindow gui)
+        internal void EstablishMQTTConnectionAsync(MainWindow gui, string user, string pass)
         {
             try
             {
-                client.Connect(clientId);
+                if (user.Equals(""))
+                {
+                    client.Connect(clientId);
+                } else
+                {
+                    client.Connect(clientId, user, pass);
+                }
                 Dispatcher.Invoke(() =>
                 {
-                    gui.UpdateStatusBar("MQTT connection established");
+                    gui.UpdateStatusBar("MQTT connection established", 2);
                 }); 
             }
             catch
@@ -165,31 +209,75 @@ namespace AuraMQTT
                 // MessageBox.Show("Could not connect!");
                 Dispatcher.Invoke(() =>
                 {
-                    gui.UpdateStatusBar("No connection, MQTT Server does not respond");
+                    gui.UpdateStatusBar("MQTT Broker not reachable", 1);
                 });
             }
         }
 
+        public void StartWithWindows(bool isChecked)
+        {
+            /*
+             * C:\Users\Tobias\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
+             */
+            string startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            if (isChecked)
+            {
+                WshShell shell = new WshShell();
+                string shortcutAddress = startupFolder + @"\AuraMQTT.lnk";
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutAddress);
+                shortcut.Description = "A startup shortcut. If you delete this shortcut from your computer, AuraMQTT.exe will not launch on Windows Startup"; // set the description of the shortcut
+                shortcut.WorkingDirectory = System.Windows.Forms.Application.StartupPath; /* working directory */
+                shortcut.TargetPath = System.Windows.Forms.Application.ExecutablePath; /* path of the executable */
+                shortcut.Save(); // save the shortcut 
+            }
+            else
+            {
+                if (System.IO.File.Exists(Path.Combine(startupFolder, "AuraMQTT.lnk")))
+                {
+                    System.IO.File.Delete(Path.Combine(startupFolder, "AuraMQTT.lnk"));
+                }
+            }
+
+
+
+        }
+
         //update status bar with a text
-        public void UpdateStatusBar(String text)
+        public void UpdateStatusBar(String text, int color)
         {
             txtStatusBar.Text = text;
+            switch (color)
+            {
+                case 0: txtStatusBar.Foreground = System.Windows.Media.Brushes.Black;
+                    break;
+                case 1: txtStatusBar.Foreground = System.Windows.Media.Brushes.Red;
+                    break;
+                case 2: txtStatusBar.Foreground = System.Windows.Media.Brushes.Green;
+                    break;
+                default: txtStatusBar.Foreground = System.Windows.Media.Brushes.Black;
+                    break;
+            }
+            
         }
 
         // this code runs when the main window closes (end of the app)
         protected override void OnClosed(EventArgs e)
         {
-            try
+            if (client.IsConnected)
             {
-                client.Disconnect();
-            } catch
-            {
+                try
+                {
+                    client.Disconnect();
+                }
+                catch
+                {
 
+                }
             }
-
-            base.OnClosed(e);
             nIcon.Dispose();
-            App.Current.Shutdown();
+            base.OnClosed(e);
+            
+            //App.Current.Shutdown();
         }
 
         // this code runs when a message was received
@@ -250,8 +338,28 @@ namespace AuraMQTT
             Properties.Settings.Default.IpAdress = txtIpAdress.Text;
             Properties.Settings.Default.Topic = txtTopic.Text;
             Properties.Settings.Default.checkMinimize = (cBoxMinimize.IsChecked).Value;
+            Properties.Settings.Default.checkStartWithWindows = (cBoxStartWithWindows.IsChecked).Value;
+
+            if ((cBoxStartWithWindows.IsChecked).Value)
+            {
+                StartWithWindows(true);
+            } else
+            {
+                StartWithWindows(false);
+            }
             Properties.Settings.Default.Save();
             System.Windows.MessageBox.Show("Settings Saved");
+        }
+
+        private void BtnReconnect_Click(object sender, RoutedEventArgs e)
+        {
+            if (client.IsConnected)
+            {
+                client.Disconnect();
+            }
+            UpdateStatusBar("Reconnecting...", 0);
+            EstablishMQTTConnection();
+
         }
 
     }

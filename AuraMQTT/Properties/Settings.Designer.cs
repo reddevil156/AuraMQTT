@@ -70,5 +70,29 @@ namespace AuraMQTT.Properties {
                 this["checkMinimize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool checkStartWithWindows {
+            get {
+                return ((bool)(this["checkStartWithWindows"]));
+            }
+            set {
+                this["checkStartWithWindows"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte password {
+            get {
+                return ((byte)(this["password"]));
+            }
+            set {
+                this["password"] = value;
+            }
+        }
     }
 }
