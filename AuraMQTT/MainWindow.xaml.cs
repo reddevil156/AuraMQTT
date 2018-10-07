@@ -10,6 +10,8 @@ using IWshRuntimeLibrary;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography;
+using System.Windows.Input;
+using System.Text.RegularExpressions;
 
 namespace AuraMQTT
 {
@@ -23,7 +25,6 @@ namespace AuraMQTT
         MqttClient client;
         string clientId;
         AuraConnect auraConnection;
-
 
         //variables for notification icon
         private NotifyIcon nIcon = new NotifyIcon();
@@ -43,14 +44,12 @@ namespace AuraMQTT
             CreateMenu();
 
             txtIpAdress.Text = Properties.Settings.Default.IpAdress;
+            txtPort.Text = Properties.Settings.Default.Port;
             txtTopic.Text = Properties.Settings.Default.Topic;
+
             cBoxMinimize.IsChecked = Properties.Settings.Default.checkMinimize;
             cBoxStartWithWindows.IsChecked = Properties.Settings.Default.checkStartWithWindows;
-
-            txtStatusBar.Text = "";
-            txtPort.Text = "";
-            txtUsername.Text = "";
-            txtPassword.Text = "";
+            cBoxAutoSubscribe.IsChecked = Properties.Settings.Default.checkAutoSubscribe;
 
             if (cBoxMinimize.IsChecked == true)
             {
@@ -78,7 +77,7 @@ namespace AuraMQTT
 
             */
 
-            
+
             //get client id from settings
             clientId = Properties.Settings.Default.clientId;
 
@@ -142,7 +141,7 @@ namespace AuraMQTT
         protected override void OnStateChanged(EventArgs e)
         {
             base.OnStateChanged(e);
-            
+
             switch (this.WindowState)
             {
                 case WindowState.Maximized:
@@ -174,7 +173,8 @@ namespace AuraMQTT
             if (txtPort.Text.Equals(""))
             {
                 client = new MqttClient(txtIpAdress.Text);
-            } else
+            }
+            else
             {
                 client = new MqttClient(txtIpAdress.Text, int.Parse(txtPort.Text), false, MqttSslProtocols.None, null, null);
             }
@@ -185,6 +185,11 @@ namespace AuraMQTT
             string pass = txtPassword.Text;
 
             await Task.Run(() => EstablishMQTTConnectionAsync(this, user, pass));
+
+            if (client.IsConnected && cBoxAutoSubscribe.IsChecked == true)
+            {
+                SubscribeToTopic();
+            }
         }
 
         // should be called with task, tries to connect to mqtt broker
@@ -195,14 +200,15 @@ namespace AuraMQTT
                 if (user.Equals(""))
                 {
                     client.Connect(clientId);
-                } else
+                }
+                else
                 {
                     client.Connect(clientId, user, pass);
                 }
                 Dispatcher.Invoke(() =>
                 {
                     gui.UpdateStatusBar("MQTT connection established", 2);
-                }); 
+                });
             }
             catch
             {
@@ -248,16 +254,20 @@ namespace AuraMQTT
             txtStatusBar.Text = text;
             switch (color)
             {
-                case 0: txtStatusBar.Foreground = System.Windows.Media.Brushes.Black;
+                case 0:
+                    txtStatusBar.Foreground = System.Windows.Media.Brushes.Black;
                     break;
-                case 1: txtStatusBar.Foreground = System.Windows.Media.Brushes.Red;
+                case 1:
+                    txtStatusBar.Foreground = System.Windows.Media.Brushes.Red;
                     break;
-                case 2: txtStatusBar.Foreground = System.Windows.Media.Brushes.Green;
+                case 2:
+                    txtStatusBar.Foreground = System.Windows.Media.Brushes.Green;
                     break;
-                default: txtStatusBar.Foreground = System.Windows.Media.Brushes.Black;
+                default:
+                    txtStatusBar.Foreground = System.Windows.Media.Brushes.Black;
                     break;
             }
-            
+
         }
 
         // this code runs when the main window closes (end of the app)
@@ -276,7 +286,7 @@ namespace AuraMQTT
             }
             nIcon.Dispose();
             base.OnClosed(e);
-            
+
             //App.Current.Shutdown();
         }
 
@@ -284,66 +294,78 @@ namespace AuraMQTT
         void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             string ReceivedMessage = Encoding.UTF8.GetString(e.Message);
+            int auraReturn = 0;
 
             Dispatcher.Invoke(delegate
-            {              // we need this construction because the receiving code in the library and the UI with textbox run on different threads
+            {              
                 String[] split = ReceivedMessage.Split(',');
                 if (split.Length == 3)
                 {
 
-                    txtReceived.Text = DateTime.Now.ToString("HH:mm") + " R: " + split[0] + "B: " + split[1] + "G: " + split[2];
-                    //txtReceived.Text = split[0] + " " + split[1] + " " + split[2];
-
+                    txtReceived.Text = DateTime.Now.ToString("HH:mm") + " R: " + split[0] + " B:" + split[1] + " G:" + split[2];
 
                     if (int.TryParse(split[0], out int ColorR) && int.TryParse(split[1], out int ColorG) && int.TryParse(split[2], out int ColorB))
                     {
                         if ((0 <= ColorR) && (ColorR <= 255) && (0 <= ColorG) && (ColorG <= 255) && (0 <= ColorB) && (ColorB <= 255))
                         {
-                            auraConnection.ChangeColors(ColorR, ColorG, ColorB);
-                        } else
+                            auraReturn = auraConnection.ChangeColors(ColorR, ColorG, ColorB);
+                        }
+                        else
                         {
                             txtReceived.Text = DateTime.Now.ToString("HH:mm") + " ERROR: " + ReceivedMessage;
                         }
-                        
-
-                    } 
+                    }
                 }
                 else
                 {
                     txtReceived.Text = DateTime.Now.ToString("HH:mm") + " ERROR: " + ReceivedMessage;
                 }
 
-            
+                if (auraReturn < 0)
+                {
+                    txtReceived.Text = "ERROR: AURA_SDK.dll is missing";
+
+                }
+                else if (auraReturn == 0)
+                {
+                    txtReceived.Text = "ERROR: No Moardsboards found";
+                }
+
             });
         }
 
-        // this code runs when the button "Subscribe" is clicked
-        private void BtnSubscribe_Click(object sender, RoutedEventArgs e)
+        public void SubscribeToTopic()
         {
             if (txtTopic.Text != "")
             {
-                // subscribe to the topic with QoS 2
-                client.Subscribe(new string[] { txtTopic.Text }, new byte[] { 2 });   // we need arrays as parameters because we can subscribe to different topics with one call
+                client.Subscribe(new string[] { txtTopic.Text }, new byte[] { 2 });
                 txtReceived.Text = DateTime.Now.ToString("HH:mm") + " Topic subscribed";
             }
             else
             {
-                System.Windows.MessageBox.Show("You have to enter a topic to subscribe!");
+                txtReceived.Text = "Topic Missing!!";
             }
+        }
+
+        private void BtnSubscribe_Click(object sender, RoutedEventArgs e)
+        {
+            SubscribeToTopic();
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            
+
             Properties.Settings.Default.IpAdress = txtIpAdress.Text;
             Properties.Settings.Default.Topic = txtTopic.Text;
             Properties.Settings.Default.checkMinimize = (cBoxMinimize.IsChecked).Value;
             Properties.Settings.Default.checkStartWithWindows = (cBoxStartWithWindows.IsChecked).Value;
+            Properties.Settings.Default.checkAutoSubscribe = (cBoxAutoSubscribe.IsChecked).Value;
 
             if ((cBoxStartWithWindows.IsChecked).Value)
             {
                 StartWithWindows(true);
-            } else
+            }
+            else
             {
                 StartWithWindows(false);
             }
@@ -362,6 +384,16 @@ namespace AuraMQTT
 
         }
 
+        /*
+         * Checks the port textfield so only numbers will be input
+         */
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
     }
-       
+
+
 }

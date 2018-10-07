@@ -36,86 +36,92 @@
                 <ImageBrush ImageSource="Resources/Logo.png" />
             </Grid.Background>
         </Grid>
-        
+
         <!-- complete grid window. fills rest of dock panel-->
         <Grid Height="Auto" Width="Auto">
-        
-        <!-- grid at top for logo-->
+
+            <!-- grid at top for logo-->
 
 
-        <!-- grid for settings mid -->
-        <Grid  Margin="0,0,0,0">
+            <!-- grid for settings mid -->
+            <Grid  Margin="0,0,0,0">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250"/>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="140"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <!-- grid settings left side-->
-            <Label Grid.Column="0" Grid.Row="0" Margin="0,0,0,5" HorizontalAlignment="Center" FontWeight="Bold">MQTT Broker Settings:</Label>
+                <!-- grid settings left side-->
+                <Label Grid.Column="0" Grid.Row="0" Margin="0,0,0,5" HorizontalAlignment="Center" FontWeight="Bold">MQTT Broker Settings:</Label>
 
-            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal">
-                <Label Margin="0,0,0,5" FontWeight="Bold">IP Adress:</Label>
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal">
+                    <Label Margin="0,0,0,5" FontWeight="Bold">IP Adress:</Label>
                     <TextBox Margin="20,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtIpAdress" ToolTip="Enter ipadress for MQTT Broker"/>
-            </StackPanel>
-            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Orientation="Horizontal">
-                <Label Margin="0,0,0,5" FontWeight="Bold">Port:</Label>
+                </StackPanel>
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Orientation="Horizontal" PreviewTextInput="NumberValidationTextBox">
+                    <Label Margin="0,0,0,5" FontWeight="Bold">Port:</Label>
                     <TextBox Margin="48,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtPort" ToolTip="Enter Port for MQTT Broker or leave empty"/>
-            </StackPanel>
-            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Orientation="Horizontal">
-                <Label Margin="0,0,0,5" FontWeight="Bold">Username:</Label>
+                </StackPanel>
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Orientation="Horizontal">
+                    <Label Margin="0,0,0,5" FontWeight="Bold">Username:</Label>
                     <TextBox Margin="15,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtUsername" ToolTip="Enter Username for MQTT Broker or leave empty" />
-            </StackPanel>
-            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Horizontal">
-                <Label Margin="0,0,0,5" FontWeight="Bold">Password:</Label>
+                </StackPanel>
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Horizontal">
+                    <Label Margin="0,0,0,5" FontWeight="Bold">Password:</Label>
                     <TextBox Margin="19,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtPassword" ToolTip="Enter Password for MQTT Broker or leave empty" />
-            </StackPanel>
+                </StackPanel>
 
 
-            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" Orientation="Horizontal">
-                <Label Margin="0,0,0,5" FontWeight="Bold" >Topic:</Label>
-                <TextBox Margin="42,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtTopic" ToolTip="Enter MQTT Topic: exmpl: /mqtt/aura" />
-            </StackPanel>
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" Orientation="Horizontal">
+                    <Label Margin="0,0,0,5" FontWeight="Bold" >Topic:</Label>
+                    <TextBox Margin="42,0,0,5" Width="150" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  x:Name="txtTopic" ToolTip="Enter MQTT Topic: exmpl: /mqtt/aura" />
+                </StackPanel>
 
 
-            <!-- columns mid settings-->
-            <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal">
-                <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="cBoxMinimize" />
-                <Label Margin="5,0,0,0" FontWeight="Bold" VerticalAlignment="Center" >Minimize to tray</Label>
-            </StackPanel>
+                <!-- columns mid settings-->
+                <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal">
+                    <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="cBoxMinimize" />
+                    <Label Margin="5,0,0,0" FontWeight="Bold" VerticalAlignment="Center" >Minimize to tray</Label>
+                </StackPanel>
                 <StackPanel Grid.Column="2" Grid.Row="2" Orientation="Horizontal">
                     <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="cBoxStartWithWindows" />
                     <Label Margin="5,0,0,0" FontWeight="Bold" VerticalAlignment="Center" >Start with windows</Label>
                 </StackPanel>
 
+                <StackPanel Grid.Column="2" Grid.Row="4" Orientation="Horizontal">
+                    <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="cBoxAutoSubscribe" />
+                    <Label Margin="5,0,0,0" FontWeight="Bold" VerticalAlignment="Center" >Auto Topic Subscription</Label>
+                </StackPanel>
+                
+                
+                
 
 
                 <!-- grid buttons right side-->
-                <Button Grid.Column="4" Grid.Row="3" Margin="1,1,1,1" FontWeight="Bold" Name="Reconnect" Click="BtnReconnect_Click" Content="Reconnect" ToolTip="Reconnect to MQTT Broker" />
-            
-                <Button Grid.Column="4" Grid.Row="5" Margin="1,1,1,1" FontWeight="Bold" Name="Subscribe" Click="BtnSubscribe_Click" Content="Subscribe" ToolTip="Subscribe Channel" />
+                <Button Grid.Column="4" Grid.Row="1" Margin="1,1,1,1" FontWeight="Bold" Name="Reconnect" Click="BtnReconnect_Click" Content="Reconnect" ToolTip="Reconnect to MQTT Broker" />
+                <Button Grid.Column="4" Grid.Row="2" Margin="1,1,1,1" FontWeight="Bold" Name="Subscribe" Click="BtnSubscribe_Click" Content="Subscribe" ToolTip="Subscribe Channel" />
 
                 <Button Grid.Column="4" Grid.Row="6" Margin="1,1,1,1" FontWeight="Bold" Name="Save" Click="BtnSave_Click" Content="Save Settings" ToolTip="Save settings for next program start" />
 
 
-            <!-- end grid mid-->
-        </Grid>
+                <!-- end grid mid-->
+            </Grid>
 
-    </Grid>
+        </Grid>
     </DockPanel>
 
 </Window>

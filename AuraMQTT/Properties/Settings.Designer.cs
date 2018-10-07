@@ -85,13 +85,25 @@ namespace AuraMQTT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public byte password {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool checkAutoSubscribe {
             get {
-                return ((byte)(this["password"]));
+                return ((bool)(this["checkAutoSubscribe"]));
             }
             set {
-                this["password"] = value;
+                this["checkAutoSubscribe"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Port {
+            get {
+                return ((string)(this["Port"]));
+            }
+            set {
+                this["Port"] = value;
             }
         }
     }
